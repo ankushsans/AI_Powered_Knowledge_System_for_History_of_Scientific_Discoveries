@@ -1,0 +1,108 @@
+<html>
+<head>
+<title>Multimodal Agent</title>
+<style>
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f0f0f0; }
+    h1 { color: #2c3e50; }
+    .section { margin: 20px 0; background: white; padding: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    button { padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #2980b9; }
+    textarea, input[type="text"] { width: 100%; max-width: 400px; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ddd; }
+    #result { margin-top: 20px; padding: 10px; background: #ecf0f1; border-radius: 5px; }
+    #voiceStatus { color: #e74c3c; }
+</style>
+</head>
+<body>
+<h1>Multimodal Agent</h1>
+<div class="section">
+    <h2>Text Input</h2>
+    <textarea id="textInput" placeholder="Enter your question (e.g., Who is Aristotle?)"></textarea><br>
+    <button onclick="submitText()">Submit Text</button>
+</div>
+<div class="section">
+    <h2>Image Input</h2>
+    <input type="file" id="imageInput" accept="image/*"><br>
+    <input type="text" id="imageQuestion" placeholder="Optional: Ask about the image"><br>
+    <button onclick="submitImage()">Submit Image</button>
+</div>
+<div class="section">
+    <h2>Voice Input</h2>
+    <button id="startRecord">Start Recording</button>
+    <button id="stopRecord" disabled>Stop Recording</button>
+    <p id="voiceStatus">Press "Start Recording" to begin.</p>
+    <p id="voiceResult"></p>
+</div>
+<div id="result"></div>
+<script>
+    let mediaRecorder;
+    let audioChunks = [];
+
+    navigator.mediaDevices.getUserMedia({ audio: true })
+	.then(stream => {
+	    mediaRecorder = new MediaRecorder(stream);
+	    mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+	    mediaRecorder.onstop = () => {
+		const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+		const formData = new FormData();
+		formData.append('audio', audioBlob, 'recording.webm');
+		fetch('/upload_voice', {
+		    method: 'POST',
+		    body: formData
+		})
+		.then(response => response.json())
+		.then(data => {
+		    document.getElementById('voiceResult').innerText = 'Result: ' + data.result;
+		    document.getElementById('voiceStatus').innerText = 'Processing complete.';
+		})
+		.catch(error => {
+		    document.getElementById('voiceResult').innerText = 'Error: ' + error;
+		});
+		audioChunks = [];
+	    };
+	    document.getElementById('startRecord').addEventListener('click', () => {
+		audioChunks = [];
+		mediaRecorder.start();
+		document.getElementById('startRecord').disabled = true;
+		document.getElementById('stopRecord').disabled = false;
+		document.getElementById('voiceStatus').innerText = 'Recording...';
+	    });
+	    document.getElementById('stopRecord').addEventListener('click', () => {
+		mediaRecorder.stop();
+		document.getElementById('startRecord').disabled = false;
+		document.getElementById('stopRecord').disabled = true;
+		document.getElementById('voiceStatus').innerText = 'Processing audio...';
+	    });
+	})
+	.catch(error => {
+	    document.getElementById('voiceStatus').innerText = 'Error accessing microphone: ' + error;
+	});
+
+    function submitText() {
+	const text = document.getElementById('textInput').value;
+	fetch('/upload_text', {
+	    method: 'POST',
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify({ text })
+	})
+	.then(response => response.json())
+	.then(data => document.getElementById('result').innerText = data.result)
+	.catch(error => document.getElementById('result').innerText = 'Error: ' + error);
+    }
+
+    function submitImage() {
+	const imageInput = document.getElementById('imageInput');
+	const question = document.getElementById('imageQuestion').value;
+	const formData = new FormData();
+	formData.append('image', imageInput.files[0]);
+	formData.append('question', question);
+	fetch('/upload_image', {
+	    method: 'POST',
+	    body: formData
+	})
+	.then(response => response.json())
+	.then(data => document.getElementById('result').innerText = data.result)
+	.catch(error => document.getElementById('result').innerText = 'Error: ' + error);
+    }
+</script>
+</body>
+</html>

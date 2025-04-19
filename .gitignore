@@ -1,0 +1,9 @@
+app_files
+dataset_init_files
+src.ipynb
+test.py
+venv
+dataset_chunk_files
+test_images
+__pycache__
+dataset_files/dataset.txt

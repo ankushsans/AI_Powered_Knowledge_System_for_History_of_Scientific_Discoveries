@@ -51,11 +51,11 @@
 		})
 		.then(response => response.json())
 		.then(data => {
-		    document.getElementById('voiceResult').innerText = 'Result: ' + data.result;
+		    document.getElementById('result').innerText = 'Result: ' + data.result;
 		    document.getElementById('voiceStatus').innerText = 'Processing complete.';
 		})
 		.catch(error => {
-		    document.getElementById('voiceResult').innerText = 'Error: ' + error;
+		    document.getElementById('result').innerText = 'Error: ' + error;
 		});
 		audioChunks = [];
 	    };

@@ -65,31 +65,6 @@ The `index.html` file is the frontend interface for the multimodal agent, allowi
 
 ### Key Components
 
-#### HTML Structure
-
-- **Text Input Section**:
-  - `<textarea id="textInput">`: For entering text queries.
-  - `<button onclick="submitText()">`: Submits the text input.
-  - `<p id="textResult">`: Displays the response.
-- **Image Input Section**:
-  - `<input type="file" id="imageInput">`: For uploading images.
-  - `<input type="text" id="imageQuestion">`: Optional field for questions about the image.
-  - `<button onclick="submitImage()">`: Submits the image and question.
-  - `<p id="imageResult">`: Displays the response.
-- **Voice Input Section**:
-  - `<button id="startRecord">`: Starts audio recording.
-  - `<button id="stopRecord">`: Stops recording (disabled by default).
-  - `<p id="voiceStatus">`: Shows recording status.
-  - `<p id="voiceResult">`: Displays the response.
-
-#### CSS Styling
-
-- **Body**: Light gray background (`#f0f0f0`), Arial font, padded layout.
-- **Sections**: White background, rounded corners, subtle shadow.
-- **Buttons**: Blue (`#3498db`), with hover effect (`#2980b9`).
-- **Inputs**: Consistent styling with borders and padding.
-- **Results**: Light gray background (`#ecf0f1`) for readability.
-
 #### JavaScript Functionality
 
 - **Voice Recording**:
@@ -120,4 +95,3 @@ The `index.html` file is the frontend interface for the multimodal agent, allowi
   - A clean, user-friendly web interface for submitting multimodal queries.
   - Handles client-side logic for input submission and result display.
 
-Together, they create a cohesive system for querying a multimodal agent through a web browser.

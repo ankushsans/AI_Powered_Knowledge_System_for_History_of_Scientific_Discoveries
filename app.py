@@ -62,7 +62,7 @@ class MultimodalAgent:
         )
             page = wiki.page(query.split()[-1])
             if page.exists():
-                return page.summary[:500]
+                return page.summary
         return self.contexts[best_idx]
 
     def generate_answer(self, question, context, reasoning="cot"):
@@ -89,6 +89,7 @@ class MultimodalAgent:
     def process_text_input(self, text):
         context = self.find_relevant_context(text)
         answer = self.generate_answer(text, context, reasoning="cot")  # Default to Chain of Thought
+        #return answer
         return self.refine_answer(text, answer)
 
     def recognize_face(self, image):
@@ -133,6 +134,7 @@ class MultimodalAgent:
             with sr.AudioFile(temp_wav_path) as source:
                 audio_record = recognizer.record(source)
                 text = recognizer.recognize_google(audio_record)
+                logger.info(f"Question: {text}")
             # Process the transcribed text
             answer = self.process_text_input(text)
             # Clean up temporary files
